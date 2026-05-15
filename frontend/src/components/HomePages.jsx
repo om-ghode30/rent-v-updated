@@ -1,12 +1,54 @@
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { DataContext } from "../context/DataContext";
+import { assetUrl } from "../api/api";
 
 function HomePages() {
+
   const navigate = useNavigate();
 
-  // ✅ AUTH + ROLE FROM CONTEXT
-  const { isAuthenticated, role } = useContext(DataContext);
+  // ✅ CONTEXT
+  const {
+    isAuthenticated,
+    role,
+    approvedVehicles,
+    fetchApprovedVehicles,
+  } = useContext(DataContext);
+
+  // ================= FETCH VEHICLES =================
+  useEffect(() => {
+
+    fetchApprovedVehicles();
+
+  }, []);
+
+  // ================= RANDOM SLIDER VEHICLES =================
+  const shuffledVehicles = [...approvedVehicles]
+    .sort(() => 0.5 - Math.random());
+
+  let heroVehicles = shuffledVehicles.slice(0, 5);
+
+  // Repeat if less than 5
+  while (
+    heroVehicles.length < 5 &&
+    approvedVehicles.length > 0
+  ) {
+
+    heroVehicles.push(
+      approvedVehicles[
+        heroVehicles.length %
+        approvedVehicles.length
+      ]
+    );
+
+  }
+
+  // Infinite slider
+  const sliderVehicles = [
+    ...heroVehicles,
+    ...heroVehicles,
+  ];
+
 
   // ✅ ROLE BASED ACTION
   const handlePrimaryAction = () => {
@@ -35,40 +77,147 @@ function HomePages() {
   return (
     <div className="overflow-x-hidden w-full">
       {/* Home Page top content background image */}
-      <div className="relative min-h-[500px] md:h-[70vh] w-full flex items-center justify-center">
+{/* HERO VEHICLE SLIDER */}
+<div className="relative z-10 overflow-hidden pt-2 pb-10 md:pb-14 bg-gradient-to-b from-slate-950 via-slate-900 to-black">
+
+  {/* HEADING */}
+  <div className="text-center mb-10 px-4">
+    <p className="text-slate-400 x-auto font-medium">
+
+      Explore bikes
+
+    </p>
+
+  </div>
+
+  {/* SLIDER */}
+  <div className="flex gap-6 animate-scroll whitespace-nowrap px-4">
+
+    {sliderVehicles.map((vehicle, index) => (
+
+      <div
+        key={`${vehicle.vehicle_id}-${index}`}
+        className="relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] h-[430px] rounded-[2rem] overflow-hidden shadow-2xl group border border-white/10"
+      >
+
+        {/* IMAGE */}
         <img
-          src="/images/img11.jpg"
-          alt="CarImages"
-          className="absolute inset-0 w-full h-full object-cover"
+          src={assetUrl(vehicle.image_url)}
+          alt={vehicle.brand}
+          className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
         />
 
-        {/* Overlay */}
-        <div className="absolute inset-0 bg-black/60"></div>
+        {/* OVERLAY */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 md:px-6">
-          <h1 className="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black max-w-4xl leading-[1.1]">
-            Explore the Hidden Spots with Rental Cars
-          </h1>
+        {/* VERIFIED */}
+        <div className="absolute top-5 right-5 bg-white/90 backdrop-blur px-3 py-1 rounded-full shadow-lg">
 
-          <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
-            {/* 🔹 BUTTON LOGIC PRESERVED */}
-            <button
-              onClick={handlePrimaryAction}
-              className="px-6 py-4 rounded-xl bg-zinc-100 text-zinc-900 font-bold hover:bg-white transition-all shadow-lg text-sm md:text-base w-full sm:w-auto"
-            >
-              {getButtonText()}
-            </button>
+          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
 
-            <button 
-              onClick={() => navigate('/about')}
-              className="px-6 py-4 rounded-xl border-2 border-white text-white font-bold hover:bg-white/10 transition-all text-sm md:text-base w-full sm:w-auto"
-            >
-              About Us
-            </button>
-          </div>
+            Verified
+
+          </span>
+
         </div>
+
+        {/* CONTENT */}
+        <div className="absolute bottom-0 p-6 w-full">
+
+          <h2 className="text-white text-3xl font-black">
+
+            {vehicle.brand}
+
+          </h2>
+
+          <p className="text-blue-300 text-sm uppercase tracking-widest font-bold mt-1">
+
+            {vehicle.model_name}
+
+          </p>
+
+          <div className="mt-5 flex items-center justify-between">
+
+            <div>
+
+              <p className="text-zinc-300 text-xs uppercase tracking-widest font-bold">
+
+                Starting At
+
+              </p>
+
+              <p className="text-white text-2xl font-black">
+
+                ₹{vehicle.price_per_day}
+
+                <span className="text-sm text-zinc-300 font-medium">
+
+                  /day
+
+                </span>
+
+              </p>
+
+            </div>
+
+            <button
+              onClick={() => {
+
+                if (!isAuthenticated) {
+
+                  alert("Please login first");
+
+                  navigate("/user-login");
+
+                  return;
+
+                }
+
+                navigate(
+                  `/vehicles/${vehicle.vehicle_id}`
+                );
+
+              }}
+              className="px-5 py-3 bg-white text-black rounded-2xl font-black text-sm hover:bg-zinc-200 transition-all"
+            >
+
+              Rent Now
+
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
 
+    ))}
+
+  </div>
+
+  {/* SCROLL CSS */}
+  <style>
+  {`
+    @keyframes scroll {
+
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+
+    }
+
+    .animate-scroll {
+      animation: scroll 35s linear infinite;
+      width: max-content;
+    }
+  `}
+</style>
+
+</div>
       {/* Feature Bar */}
       <div className="bg-yellow-400 py-12 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-black">

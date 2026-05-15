@@ -151,6 +151,7 @@ if (record.is_used) {
         expiresIn: "30d"
       }
     );
+    res.clearCookie("token");
     res.cookie("booking_token", token, {
     httpOnly: true,
     secure: false, // localhost

@@ -19,7 +19,8 @@ const Navbar = ({ contactRef }) => {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate("/login");
+      alert("Logout successfully");
+      navigate("/");
     } catch {
       alert("Logout failed");
     }
@@ -105,7 +106,7 @@ const Navbar = ({ contactRef }) => {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link to="/login">
+                <Link to="/user-login">
                   <button className="text-slate-700 font-bold px-4 py-2 hover:text-blue-600 transition-colors">
                     Login
                   </button>
@@ -197,7 +198,7 @@ const Navbar = ({ contactRef }) => {
               </button>
             ) : (
               <div className="flex flex-col gap-3">
-                <Link to="/login" className="w-full">
+                <Link to="/user-login" className="w-full">
                   <button className="w-full bg-slate-50 text-slate-700 border border-slate-200 py-4 rounded-2xl font-bold active:scale-95 transition-all">
                     Login
                   </button>

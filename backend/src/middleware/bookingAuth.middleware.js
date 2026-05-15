@@ -4,18 +4,10 @@ module.exports = (req, res, next) => {
 
   let token = null;
 
-  // Authorization header
-  if (req.headers.authorization) {
+  // ONLY booking user token
+  if (req.cookies?.booking_token) {
 
-    token =
-      req.headers.authorization.split(" ")[1];
-
-  }
-
-  // ONLY admin/owner token
-  if (!token && req.cookies?.token) {
-
-    token = req.cookies.token;
+    token = req.cookies.booking_token;
 
   }
 

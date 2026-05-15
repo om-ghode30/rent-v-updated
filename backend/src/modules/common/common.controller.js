@@ -131,6 +131,8 @@ const login = async (req, res) => {
     );
 
     // 5. Set Cookie and Respond
+    res.clearCookie("booking_token");
+    
     res.cookie("token", token, {
       httpOnly: true,
       secure: true, // Set to true if using HTTPS
