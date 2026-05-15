@@ -65,21 +65,73 @@ function UserProtected({ children }) {
 }
 
 function PublicRoute({ children }) {
-  const { isAuthenticated, role, loading } = useData();
 
-  if (loading) return <div>Loading...</div>;
+  const {
+    isAuthenticated,
+    role,
+    loading,
+  } = useData();
 
+  if (loading) {
+
+    return <div>Loading...</div>;
+
+  }
+
+  // =========================
+  // ALREADY LOGGED IN
+  // =========================
   if (isAuthenticated) {
-    // 🔥 Role-based redirect
-    if (role === "admin") {
-      return <Navigate to="/admin/dashboard" replace />;
+
+    // ADMIN
+    if (
+      String(role).toLowerCase() ===
+      "admin"
+    ) {
+
+      return (
+        <Navigate
+          to="/admin/dashboard"
+          replace
+        />
+      );
+
     }
 
-    // USER & OWNER → Home
-    return <Navigate to="/" replace />;
+    // OWNER
+    if (
+      String(role).toLowerCase() ===
+      "owner"
+    ) {
+
+      return (
+        <Navigate
+          to="/owner/vehicles"
+          replace
+        />
+      );
+
+    }
+
+    // USER
+    if (
+      String(role).toLowerCase() ===
+      "user"
+    ) {
+
+      return (
+        <Navigate
+          to="/"
+          replace
+        />
+      );
+
+    }
+
   }
 
   return children;
+
 }
 
 function AdminProtected({ children }) {
@@ -104,6 +156,64 @@ function OwnerProtected({ children }) {
   if (String(role).toLowerCase() !== "owner") return <Navigate to="/" replace />;
 
   return children;
+}
+
+function HomeRedirect() {
+
+  const {
+    isAuthenticated,
+    role,
+    loading,
+  } = useData();
+
+  if (loading) {
+
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+
+  }
+
+  // =========================
+  // OWNER SHOULD NOT ACCESS HOME
+  // =========================
+  if (
+    isAuthenticated &&
+    String(role).toLowerCase() ===
+      "owner"
+  ) {
+
+    return (
+      <Navigate
+        to="/owner/vehicles"
+        replace
+      />
+    );
+
+  }
+
+  // =========================
+  // ADMIN SHOULD NOT ACCESS HOME
+  // =========================
+  if (
+    isAuthenticated &&
+    String(role).toLowerCase() ===
+      "admin"
+  ) {
+
+    return (
+      <Navigate
+        to="/admin/dashboard"
+        replace
+      />
+    );
+
+  }
+
+  return <Home />;
+
 }
 
 function AppRoutes() {
@@ -169,7 +279,10 @@ function AppRoutes() {
         </Route>
 
   {/* Default & 404 */}
-  <Route path="/" element={<Home />} />
+<Route
+  path="/"
+  element={<HomeRedirect />}
+/>
 
         {/* Owner routes */}
         <Route path="/owner/vehicles" element={<OwnerProtected><OwnerVehicles /></OwnerProtected>} />

@@ -52,9 +52,17 @@ const Navbar = ({ contactRef }) => {
 
           {/* Desktop Menu */}
           <ul className="hidden md:flex gap-8 items-center">
-            <li>
-              <Link to="/" className={navLinkStyles}>Home</Link>
-            </li>
+          {/* HOME LINK */}
+{role !== "owner" && (
+  <li>
+    <Link
+      to="/"
+      className={navLinkStyles}
+    >
+      Home
+    </Link>
+  </li>
+)}
 
             {contactRef && (
               <li>
@@ -77,13 +85,13 @@ const Navbar = ({ contactRef }) => {
             )}
 
             {/* USER LINKS */}
+{/* USER LINKS */}
 {isAuthenticated && role === "user" && (
   <>
     <li>
-      <Link to="/vehicles" className={navLinkStyles}>Vehicles</Link>
-    </li>
-    <li>
-      <Link to="/my-bookings" className={navLinkStyles}>My Bookings</Link>
+      <Link to="/my-bookings" className={navLinkStyles}>
+        My Bookings
+      </Link>
     </li>
   </>
 )}
@@ -137,11 +145,17 @@ const Navbar = ({ contactRef }) => {
         }`}
       >
         <ul className="p-6 space-y-4">
-          <li>
-            <Link to="/" className="block text-lg font-semibold text-slate-700 p-3 hover:bg-blue-50 rounded-xl transition-colors">
-              Home
-            </Link>
-          </li>
+          {/* MOBILE HOME LINK */}
+{role !== "owner" && (
+  <li>
+    <Link
+      to="/"
+      className="block text-lg font-semibold text-slate-700 p-3 hover:bg-blue-50 rounded-xl transition-colors"
+    >
+      Home
+    </Link>
+  </li>
+)}
 
           {contactRef && (
             <li>
@@ -168,14 +182,6 @@ const Navbar = ({ contactRef }) => {
 
           {isAuthenticated && role === "user" && (
   <div className="pt-2 space-y-4 border-t border-slate-50">
-    <li>
-      <Link
-        to="/vehicles"
-        className="block text-lg font-semibold text-slate-700 p-3 hover:bg-blue-50 rounded-xl transition-colors"
-      >
-        Vehicles
-      </Link>
-    </li>
 
     <li>
       <Link

@@ -1,5 +1,22 @@
-import { useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  FaCar,
+  FaUserAlt,
+  FaTag,
+  FaArrowRight,
+  FaSearch,
+  FaSlidersH,
+} from "react-icons/fa";
+
 import { DataContext } from "../context/DataContext";
 import { assetUrl } from "../api/api";
 
@@ -7,13 +24,19 @@ function HomePages() {
 
   const navigate = useNavigate();
 
-  // ✅ CONTEXT
+  // ================= CONTEXT =================
   const {
     isAuthenticated,
     role,
     approvedVehicles,
     fetchApprovedVehicles,
   } = useContext(DataContext);
+
+  // ================= STATES =================
+  const [search, setSearch] = useState("");
+
+  const [priceRange, setPriceRange] =
+    useState(5000);
 
   // ================= FETCH VEHICLES =================
   useEffect(() => {
@@ -22,11 +45,12 @@ function HomePages() {
 
   }, []);
 
-  // ================= RANDOM SLIDER VEHICLES =================
+  // ================= RANDOM HERO VEHICLES =================
   const shuffledVehicles = [...approvedVehicles]
     .sort(() => 0.5 - Math.random());
 
-  let heroVehicles = shuffledVehicles.slice(0, 5);
+  let heroVehicles =
+    shuffledVehicles.slice(0, 5);
 
   // Repeat if less than 5
   while (
@@ -49,315 +73,480 @@ function HomePages() {
     ...heroVehicles,
   ];
 
+  // ================= FILTERED VEHICLES =================
+  const filteredVehicles =
+    approvedVehicles.filter((v) => {
 
-  // ✅ ROLE BASED ACTION
+      const matchSearch =
+
+        v.brand
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+
+        v.model_name
+          .toLowerCase()
+          .includes(search.toLowerCase());
+
+        const matchPrice =
+    Number(v.price_per_day) <= Number(priceRange);
+
+      return (
+        matchSearch &&
+        matchPrice
+      );
+
+    });
+
+  // ================= ROLE ACTION =================
   const handlePrimaryAction = () => {
-    if (role === "owner") {
-      if (!isAuthenticated) {
-        navigate("/login");
-        return;
-      }
+
+    if (
+      role === "owner" &&
+      isAuthenticated
+    ) {
+
+      navigate("/owner/vehicles");
+
+      return;
+
     }
 
-    if (role === "owner") {
-      navigate("/owner/vehicles");
-    } else {
-      navigate("/vehicles");
-    }
+    navigate("/");
+
   };
 
-  // ✅ ROLE BASED BUTTON TEXT
+  // ================= BUTTON TEXT =================
   const getButtonText = () => {
-    if (isAuthenticated && role === "owner") {
-      return "Upload Your Rental Vehicle";
+
+    if (
+      isAuthenticated &&
+      role === "owner"
+    ) {
+
+      return "Upload Your Vehicle";
+
     }
-    return "Reserve Your Car";
+
+    return "Book Your Ride";
+
   };
 
   return (
-    <div className="overflow-x-hidden w-full">
-      {/* Home Page top content background image */}
-{/* HERO VEHICLE SLIDER */}
-<div className="relative z-10 overflow-hidden pt-2 pb-10 md:pb-14 bg-gradient-to-b from-slate-950 via-slate-900 to-black">
 
-  {/* HEADING */}
-  <div className="text-center mb-10 px-4">
-    <p className="text-slate-400 x-auto font-medium">
+    <div className="overflow-x-hidden w-full bg-slate-50">
 
-      Explore bikes
+      
 
-    </p>
+      {/* ================= HERO SLIDER ================= */}
+      <div className="relative z-10 overflow-hidden pt-2 pb-10 md:pb-14 bg-gradient-to-b from-slate-950 via-slate-900 to-black">
 
-  </div>
+        {/* HEADING */}
+        <div className="text-center mb-10 px-4">
 
-  {/* SLIDER */}
-  <div className="flex gap-6 animate-scroll whitespace-nowrap px-4">
+          <p className="text-slate-400 font-medium">
 
-    {sliderVehicles.map((vehicle, index) => (
-
-      <div
-        key={`${vehicle.vehicle_id}-${index}`}
-        className="relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] h-[430px] rounded-[2rem] overflow-hidden shadow-2xl group border border-white/10"
-      >
-
-        {/* IMAGE */}
-        <img
-          src={assetUrl(vehicle.image_url)}
-          alt={vehicle.brand}
-          className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-        />
-
-        {/* OVERLAY */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-
-        {/* VERIFIED */}
-        <div className="absolute top-5 right-5 bg-white/90 backdrop-blur px-3 py-1 rounded-full shadow-lg">
-
-          <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
-
-            Verified
-
-          </span>
-
-        </div>
-
-        {/* CONTENT */}
-        <div className="absolute bottom-0 p-6 w-full">
-
-          <h2 className="text-white text-3xl font-black">
-
-            {vehicle.brand}
-
-          </h2>
-
-          <p className="text-blue-300 text-sm uppercase tracking-widest font-bold mt-1">
-
-            {vehicle.model_name}
+            Explore Vehicles
 
           </p>
 
-          <div className="mt-5 flex items-center justify-between">
+          <h1 className="text-3xl md:text-5xl font-black text-white mt-3">
 
-            <div>
+            Ride Any Vehicle
 
-              <p className="text-zinc-300 text-xs uppercase tracking-widest font-bold">
-
-                Starting At
-
-              </p>
-
-              <p className="text-white text-2xl font-black">
-
-                ₹{vehicle.price_per_day}
-
-                <span className="text-sm text-zinc-300 font-medium">
-
-                  /day
-
-                </span>
-
-              </p>
-
-            </div>
-
-            <button
-              onClick={() => {
-
-                if (!isAuthenticated) {
-
-                  alert("Please login first");
-
-                  navigate("/user-login");
-
-                  return;
-
-                }
-
-                navigate(
-                  `/vehicles/${vehicle.vehicle_id}`
-                );
-
-              }}
-              className="px-5 py-3 bg-white text-black rounded-2xl font-black text-sm hover:bg-zinc-200 transition-all"
-            >
-
-              Rent Now
-
-            </button>
-
-          </div>
+          </h1>
 
         </div>
 
-      </div>
+        {/* SLIDER */}
+        <div className="flex gap-6 animate-scroll whitespace-nowrap px-4">
 
-    ))}
+          {sliderVehicles.map((vehicle, index) => (
 
-  </div>
+            <div
+              key={`${vehicle.vehicle_id}-${index}`}
+              className="relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] h-[430px] rounded-[2rem] overflow-hidden shadow-2xl group border border-white/10"
+            >
 
-  {/* SCROLL CSS */}
-  <style>
-  {`
-    @keyframes scroll {
+              {/* IMAGE */}
+              <img
+                src={assetUrl(vehicle.image_url)}
+                alt={vehicle.brand}
+                className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
+              />
 
-      0% {
-        transform: translateX(0);
-      }
+              {/* OVERLAY */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
-      100% {
-        transform: translateX(-50%);
-      }
+              {/* VERIFIED */}
+              <div className="absolute top-5 right-5 bg-white/90 backdrop-blur px-3 py-1 rounded-full shadow-lg">
 
-    }
+                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
 
-    .animate-scroll {
-      animation: scroll 35s linear infinite;
-      width: max-content;
-    }
-  `}
-</style>
+                  Verified
 
-</div>
-      {/* Feature Bar */}
-      <div className="bg-yellow-400 py-12 px-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-black">
-          {[
-            {
-              title: "Well maintained vehicles",
-              desc: "All our cars are thoroughly inspected and maintained for smooth, reliable driving.",
-            },
-            {
-              title: "Affordable pricing",
-              desc: "Enjoy transparent pricing with no hidden fees. Great cars at great rates.",
-            },
-            {
-              title: "Excellent support",
-              desc: "We're here whenever you need us. Friendly service and peace of mind.",
-            },
-          ].map((item, index) => (
-            <div key={index} className="flex flex-col space-y-3">
-              <div className="flex items-center space-x-3">
-                <span className="bg-green-700 rounded-full p-1.5 shrink-0">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                </span>
+
+              </div>
+
+              {/* CONTENT */}
+              <div className="absolute bottom-0 p-6 w-full">
+
+                <h2 className="text-white text-3xl font-black">
+
+                  {vehicle.brand}
+
+                </h2>
+
+                <p className="text-blue-300 text-sm uppercase tracking-widest font-bold mt-1">
+
+                  {vehicle.model_name}
+
+                </p>
+
+                <div className="mt-5 flex items-center justify-between">
+
+                  <div>
+
+                    <p className="text-zinc-300 text-xs uppercase tracking-widest font-bold">
+
+                      Starting At
+
+                    </p>
+
+                    <p className="text-white text-2xl font-black">
+
+                      ₹{vehicle.price_per_day}
+
+                      <span className="text-sm text-zinc-300 font-medium">
+
+                        /day
+
+                      </span>
+
+                    </p>
+
+                  </div>
+
+                  <button
+                    onClick={() => {
+
+                      if (!isAuthenticated) {
+
+                        alert(
+                          "Please login first"
+                        );
+
+                        navigate(
+                          "/user-login"
+                        );
+
+                        return;
+
+                      }
+
+                      navigate(
+                        `/vehicles/${vehicle.vehicle_id}`
+                      );
+
+                    }}
+                    className="px-5 py-3 bg-white text-black rounded-2xl font-black text-sm hover:bg-zinc-200 transition-all"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={4}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                </span>
-                <h3 className="font-extrabold text-lg md:text-xl">{item.title}</h3>
+
+                    Rent Now
+
+                  </button>
+
+                </div>
+
               </div>
-              <p className="text-sm md:text-base font-medium opacity-90">{item.desc}</p>
+
             </div>
+
           ))}
+
         </div>
+
+        {/* SCROLL CSS */}
+        <style>
+          {`
+            @keyframes scroll {
+
+              0% {
+                transform: translateX(0);
+              }
+
+              100% {
+                transform: translateX(-50%);
+              }
+
+            }
+
+            .animate-scroll {
+              animation: scroll 35s linear infinite;
+              width: max-content;
+            }
+          `}
+        </style>
+
       </div>
 
-      {/* About Section */}
-      <section className="bg-white py-12 md:py-20">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6 md:space-y-8">
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-gray-900 leading-tight">
-              We are committed to providing fast, reliable, and professional car
-              rental services.
-            </h1>
+      {/* ================= SEARCH SECTION ================= */}
+      <div className="bg-slate-50 px-4 pt-6 pb-8">
 
-            <button
-              onClick={handlePrimaryAction}
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-green-700 text-white font-bold rounded-full hover:bg-green-800 transition-all shadow-lg shadow-green-100"
-            >
-              {getButtonText()}
-            </button>
-          </div>
+        <div className="max-w-7xl mx-auto">
 
-          <div className="w-full h-64 md:h-80 lg:h-96 bg-slate-100 rounded-3xl border border-slate-100 overflow-hidden">
-             {/* 
+          <div className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-2xl shadow-black/20 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
 
-[Image of car rental service]
- */}
-          </div>
-        </div>
+            {/* SEARCH */}
+            <div className="relative">
 
-        <div className="max-w-7xl mx-auto px-6 mt-16 md:mt-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Mobile order change: Text first, then image */}
-          <div className="order-2 lg:order-1 relative w-full h-72 md:h-80 lg:h-96 bg-slate-100 rounded-3xl overflow-hidden">
-            <div className="absolute bottom-4 left-4 right-4 bg-green-900/95 backdrop-blur-md text-white p-5 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs md:text-sm font-medium text-center sm:text-left">
-                No matter the situation, RentalCars is ready to assist.
-              </p>
-              <span className="bg-lime-400 text-green-900 px-5 py-2 rounded-full text-xs md:text-sm font-black whitespace-nowrap">
-                +123 456 7890
-              </span>
+              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+
+              <input
+                type="text"
+                placeholder="Search brand or model..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-700"
+              />
+
             </div>
-          </div>
 
-          <div className="order-1 lg:order-2 space-y-6">
-            <h2 className="text-2xl md:text-4xl font-black text-gray-900 leading-tight">
-              Your trusted partner in reliable car rental
-            </h2>
+            {/* PRICE */}
+            <div className="space-y-2 px-2">
 
-            <p className="text-gray-600 text-base md:text-lg">
-              We take pride in our fleet and customer experience.
-            </p>
+              <div className="flex justify-between items-center">
 
-            <button
-              onClick={handlePrimaryAction}
-              className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-green-700 text-white font-bold rounded-full hover:bg-green-800 transition-all"
-            >
-              {getButtonText()}
-            </button>
-          </div>
-        </div>
-      </section>
+                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
 
-      {/* Steps Section */}
-      <section className="flex flex-col lg:flex-row items-stretch w-full">
-        {/* Left Text Section */}
-        <div className="bg-zinc-900 text-white p-8 md:p-16 lg:w-1/2 flex flex-col justify-center gap-10">
-          <h2 className="text-2xl md:text-4xl font-black border-l-4 border-lime-400 pl-6">
-            Rent your car in 3 easy steps
-          </h2>
+                  <FaSlidersH className="text-blue-600" />
 
-          <div className="space-y-8">
-            {[
-              { id: '01', title: 'Choose Your Car', desc: 'Find the perfect car that fits your journey.' },
-              { id: '02', title: 'Book Online', desc: 'Select date and location in seconds.' },
-              { id: '03', title: 'Pick Up & Drive', desc: 'Grab the keys and enjoy your ride.' }
-            ].map((step) => (
-              <div key={step.id} className="flex gap-5 group">
-                <span className="w-10 h-10 md:w-12 md:h-12 shrink-0 flex items-center justify-center rounded-xl bg-lime-400 text-black font-black text-lg md:text-xl">
-                  {step.id}
+                  Budget:
+                  Up to ₹{priceRange}
+
+                </label>
+
+                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg">
+
+                  Per Day
+
                 </span>
-                <div>
-                  <h4 className="font-bold text-lg md:text-xl mb-1">{step.title}</h4>
-                  <p className="text-gray-400 text-sm md:text-base leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
+
               </div>
-            ))}
+
+              <input
+                type="range"
+                min="500"
+                max="5000"
+                step="100"
+                value={priceRange}
+                onChange={(e) =>
+                  setPriceRange(e.target.value)
+                }
+                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              />
+
+            </div>
+
           </div>
+
         </div>
 
-        {/* Right Image */}
-        <div className="w-full lg:w-1/2 h-64 md:h-80 lg:h-auto">
-          <img
-            src="/images/img11.jpg"
-            alt="Car"
-            className="w-full h-full object-cover"
-          />
+      </div>
+
+      {/* ================= VEHICLE GRID ================= */}
+      <div className="bg-slate-50 py-14">
+
+        <div className="max-w-7xl mx-auto px-4">
+
+          {/* EMPTY */}
+          {filteredVehicles.length === 0 ? (
+
+            <div className="bg-white border-2 border-dashed border-slate-200 p-16 rounded-[3rem] text-center max-w-2xl mx-auto">
+
+              <FaCar
+                className="text-slate-200 mx-auto mb-4"
+                size={64}
+              />
+
+              <h2 className="text-xl font-bold text-slate-800">
+
+                No matches found
+
+              </h2>
+
+              <p className="text-slate-500 mt-2">
+
+                Try adjusting your filters.
+
+              </p>
+
+            </div>
+
+          ) : (
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
+              {filteredVehicles.map((vehicle) => (
+
+                <div
+                  key={vehicle.vehicle_id}
+                  className="group bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden flex flex-col hover:shadow-2xl hover:shadow-blue-900/5 transition-all duration-500 transform md:hover:-translate-y-2"
+                >
+
+                  {/* IMAGE */}
+                  <div className="relative h-56 overflow-hidden">
+
+                    <img
+                      src={assetUrl(vehicle.image_url)}
+                      alt={vehicle.brand}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full border border-slate-100 shadow-sm">
+
+                      <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+
+                        Verified
+
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                  {/* INFO */}
+                  <div className="p-6 flex-1 flex flex-col">
+
+                    <h2 className="text-xl font-black text-slate-800 leading-tight">
+
+                      {vehicle.brand}
+
+                      <span className="text-blue-600 font-bold block text-sm uppercase tracking-tighter">
+
+                        {vehicle.model_name}
+
+                      </span>
+
+                    </h2>
+
+                    <div className="mt-4 space-y-3 flex-1">
+
+                      <div className="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-tighter">
+
+                        <FaTag className="text-slate-300" />
+
+                        <span>
+                          {vehicle.vehicle_number}
+                        </span>
+
+                      </div>
+
+                      <div className="flex items-center gap-2 text-slate-500 text-xs font-medium">
+
+                        <FaUserAlt className="text-slate-300" />
+
+                        <span>
+
+                          Host:
+
+                          <span className="text-slate-700 font-bold">
+
+                            {" "}
+                            {vehicle.owner_name}
+
+                          </span>
+
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                    {/* PRICE */}
+                    <div className="mt-6 pt-5 border-t border-slate-50">
+
+                      <div className="flex justify-between items-end mb-4">
+
+                        <div>
+
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+
+                            Starting at
+
+                          </p>
+
+                          <p className="text-2xl font-black text-slate-900">
+
+                            ₹{vehicle.price_per_day}
+
+                            <span className="text-xs text-slate-400 font-medium">
+
+                              /day
+
+                            </span>
+
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                      <button
+                        onClick={() => {
+
+                          if (!isAuthenticated) {
+
+                            alert(
+                              "Please login first"
+                            );
+
+                            navigate(
+                              "/user-login"
+                            );
+
+                            return;
+
+                          }
+
+                          navigate(
+                            `/vehicles/${vehicle.vehicle_id}`
+                          );
+
+                        }}
+                        className="w-full flex items-center justify-center gap-3 bg-blue-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all"
+                      >
+
+                        Book Now
+
+                        <FaArrowRight
+                          size={12}
+                        />
+
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          )}
+
         </div>
-      </section>
+
+      </div>
+
     </div>
+
   );
+
 }
 
 export default HomePages;
