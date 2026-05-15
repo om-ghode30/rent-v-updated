@@ -20,7 +20,7 @@ exports.createBooking = async (req, res) => {
   const bookingUserId = req.user.id;
   const { vehicle_id, start_datetime, end_datetime, driver_name } = req.body;
 
-  if (!vehicle_id || !start_datetime || !end_datetime || !req.file || !driver_name) {
+  if (!vehicle_id || !start_datetime || !end_datetime || !req.file ) {
     return res.status(400).json({
       success: false,
       message: "All fields including license required"
