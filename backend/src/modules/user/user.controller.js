@@ -63,7 +63,7 @@ exports.sendOTP = async (req, res) => {
 // VERIFY OTP
 // =================================
 exports.verifyOTP = async (req, res) => {
-
+  console.log("verifyOTP called");
   const { email, otp } = req.body;
 
   try {

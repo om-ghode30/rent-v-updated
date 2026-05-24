@@ -42,7 +42,10 @@ await connection.query(`
         brand VARCHAR(100),
         model_name VARCHAR(100),
         price_per_day DECIMAL(10,2),
-
+        hourly_price DECIMAL(10,2) DEFAULT 0,
+        daily_price DECIMAL(10,2) DEFAULT 0,
+        pickup_map_link TEXT,
+        pickup_address TEXT,
         status ENUM('PENDING','APPROVED','REJECTED') DEFAULT 'PENDING',
         availability_status ENUM('AVAILABLE','UNAVAILABLE') DEFAULT 'AVAILABLE',
 
@@ -58,27 +61,34 @@ await connection.query(`
     // BOOKINGS
     await connection.query(`
       CREATE TABLE IF NOT EXISTS bookings (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        booking_user_id INT NOT NULL,
-        vehicle_id INT NOT NULL,
-
-        start_datetime DATETIME NOT NULL,
-        end_datetime DATETIME NOT NULL,
-        d_name TEXT NOT NULL,
-
-        total_days INT NOT NULL,
-        total_price DECIMAL(10,2) NOT NULL,
-
-        status ENUM(
-          'PENDING','CONFIRMED','READY_TO_DELIVER','COMPLETED','CANCELLED'
-        ) DEFAULT 'PENDING',
-
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-        FOREIGN KEY (booking_user_id) REFERENCES booking_users(id) ON DELETE CASCADE,
-        FOREIGN KEY (vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
-      )
-    `);
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_user_id INT NOT NULL,
+    vehicle_id INT NOT NULL,
+    booking_type ENUM('HOURLY','DAILY') NOT NULL,
+    start_datetime DATETIME NOT NULL,
+    end_datetime DATETIME NOT NULL,
+    total_days INT NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    driver_name VARCHAR(255) NOT NULL,
+    rejection_reason TEXT NULL,
+    aadhar_url TEXT,
+    license_url TEXT,
+    status ENUM(
+        'PENDING',
+        'CONFIRMED',
+        'READY_TO_DELIVER',
+        'COMPLETED',
+        'CANCELLED',
+        'REJECTED'
+    ) DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_user_id)
+        REFERENCES booking_users(id)
+        ON DELETE CASCADE,
+    FOREIGN KEY (vehicle_id)
+        REFERENCES vehicles(id)
+        ON DELETE CASCADE
+    )`);
 
     // PAYMENTS
     await connection.query(`
