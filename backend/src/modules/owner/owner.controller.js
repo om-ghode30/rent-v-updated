@@ -227,8 +227,10 @@ exports.getOwnerBookingDetails = async (req, res) => { // Added async
     const [rows] = await db.query(`
       SELECT b.*, 
              v.vehicle_number,
-             v.brand,
-             v.model_name,
+       v.brand,
+       v.model_name,
+       v.pickup_address,
+       v.pickup_map_link,
              bu.id as booking_user_id,
             bu.email as customer_email
       FROM bookings b

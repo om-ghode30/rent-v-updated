@@ -17,9 +17,20 @@ export default function VehicleDetails() {
   const [vehicleData, setVehicleData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [license, setLicense] = useState(null);
+const [pickupDatetime, setPickupDatetime] =
+  useState("");
+
+const [bookingType, setBookingType] =
+  useState("DAILY");
+
+const [days, setDays] =
+  useState(1);
+
+const [license, setLicense] =
+  useState(null);
+
+const [aadhar, setAadhar] =
+  useState(null);
   const [bookingLoading, setBookingLoading] = useState(false);
 
   useEffect(() => {
@@ -33,19 +44,73 @@ export default function VehicleDetails() {
 
   const handleBooking = async (e) => {
     e.preventDefault();
-    if (!startDate || !endDate || !license || !driverName) {
-  alert("Please fill all fields including driver name & license");
+    if (
+  !pickupDatetime ||
+  !driverName ||
+  !license ||
+  !aadhar
+) {
+
+  alert(
+    "Please fill all fields"
+  );
+
   return;
+
+}
+
+if (
+  bookingType === "DAILY" &&
+  (!days || Number(days) < 1)
+) {
+
+  alert("Enter valid days");
+
+  return;
+
 }
 
     try {
       setBookingLoading(true);
       const formData = new FormData();
-      formData.append("vehicle_id", id);
-      formData.append("start_datetime", startDate);
-      formData.append("end_datetime", endDate);
-      formData.append("driver_name", driverName); 
-      formData.append("license", license);
+      formData.append(
+  "vehicle_id",
+  id
+);
+
+formData.append(
+  "booking_type",
+  bookingType
+);
+
+formData.append(
+  "pickup_datetime",
+  pickupDatetime
+);
+
+formData.append(
+  "driver_name",
+  driverName
+);
+
+formData.append(
+  "license",
+  license
+);
+
+formData.append(
+  "aadhar",
+  aadhar
+);
+
+if (bookingType === "DAILY") {
+
+  formData.append(
+    "days",
+    days
+  );
+
+}
 
       const res = await createBooking(formData);
       if (res.success) {
@@ -167,26 +232,83 @@ export default function VehicleDetails() {
 
               {/* BOOKING FORM */}
               <form onSubmit={handleBooking} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Pick Up</label>
-                    <input
-                      type="datetime-local"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Drop Off</label>
-                    <input
-                      type="datetime-local"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                    />
-                  </div>
-                </div>
+                {/* BOOKING TYPE */}
+<div className="space-y-1">
+
+  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+
+    Booking Type
+
+  </label>
+
+  <select
+    value={bookingType}
+    onChange={(e) =>
+      setBookingType(e.target.value)
+    }
+    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+  >
+
+    <option value="DAILY">
+
+      Daily Booking
+
+    </option>
+
+    <option value="HOURLY">
+
+      Hourly Booking (8 Hours)
+
+    </option>
+
+  </select>
+
+</div>
+
+{/* PICKUP DATETIME */}
+<div className="space-y-1">
+
+  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+
+    Pickup Date & Time
+
+  </label>
+
+  <input
+    type="datetime-local"
+    value={pickupDatetime}
+    onChange={(e) =>
+      setPickupDatetime(e.target.value)
+    }
+    className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+  />
+
+</div>
+
+{/* DAYS */}
+{bookingType === "DAILY" && (
+
+  <div className="space-y-1">
+
+    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+
+      Number Of Days
+
+    </label>
+
+    <input
+      type="number"
+      min="1"
+      value={days}
+      onChange={(e) =>
+        setDays(e.target.value)
+      }
+      className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs focus:ring-2 focus:ring-blue-500 outline-none"
+    />
+
+  </div>
+
+)}
 
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">Driver Name</label>
@@ -218,6 +340,43 @@ export default function VehicleDetails() {
                     </span>
                   </label>
                 </div>
+
+                <div className="space-y-1">
+
+  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
+
+    Aadhar Photo
+
+  </label>
+
+  <input
+    type="file"
+    accept="image/*"
+    onChange={(e) =>
+      setAadhar(e.target.files[0])
+    }
+    className="hidden"
+    id="aadhar-upload"
+  />
+
+  <label
+    htmlFor="aadhar-upload"
+    className="flex items-center justify-center gap-2 w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-3 cursor-pointer hover:bg-slate-100"
+  >
+
+    <FaFileImage className="text-slate-400" />
+
+    <span className="text-[10px] font-bold text-slate-500 truncate">
+
+      {aadhar
+        ? aadhar.name
+        : "Upload Aadhar Card"}
+
+    </span>
+
+  </label>
+
+</div>
 
                 <button
                   type="submit"

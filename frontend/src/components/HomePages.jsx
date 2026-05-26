@@ -13,8 +13,6 @@ import {
   FaUserAlt,
   FaTag,
   FaArrowRight,
-  FaSearch,
-  FaSlidersH,
 } from "react-icons/fa";
 
 import { DataContext } from "../context/DataContext";
@@ -32,11 +30,7 @@ function HomePages() {
     fetchApprovedVehicles,
   } = useContext(DataContext);
 
-  // ================= STATES =================
-  const [search, setSearch] = useState("");
 
-  const [priceRange, setPriceRange] =
-    useState(5000);
 
   // ================= FETCH VEHICLES =================
   useEffect(() => {
@@ -73,29 +67,6 @@ function HomePages() {
     ...heroVehicles,
   ];
 
-  // ================= FILTERED VEHICLES =================
-  const filteredVehicles =
-    approvedVehicles.filter((v) => {
-
-      const matchSearch =
-
-        v.brand
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-
-        v.model_name
-          .toLowerCase()
-          .includes(search.toLowerCase());
-
-        const matchPrice =
-    Number(v.price_per_day) <= Number(priceRange);
-
-      return (
-        matchSearch &&
-        matchPrice
-      );
-
-    });
 
   // ================= ROLE ACTION =================
   const handlePrimaryAction = () => {
@@ -290,71 +261,6 @@ function HomePages() {
 
       </div>
 
-      {/* ================= SEARCH SECTION ================= */}
-      <div className="bg-slate-50 px-4 pt-6 pb-8">
-
-        <div className="max-w-7xl mx-auto">
-
-          <div className="bg-white border border-slate-100 rounded-[2rem] p-6 shadow-2xl shadow-black/20 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-
-            {/* SEARCH */}
-            <div className="relative">
-
-              <FaSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-
-              <input
-                type="text"
-                placeholder="Search brand or model..."
-                value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
-                }
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-700"
-              />
-
-            </div>
-
-            {/* PRICE */}
-            <div className="space-y-2 px-2">
-
-              <div className="flex justify-between items-center">
-
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-
-                  <FaSlidersH className="text-blue-600" />
-
-                  Budget:
-                  Up to ₹{priceRange}
-
-                </label>
-
-                <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg">
-
-                  Per Day
-
-                </span>
-
-              </div>
-
-              <input
-                type="range"
-                min="500"
-                max="5000"
-                step="100"
-                value={priceRange}
-                onChange={(e) =>
-                  setPriceRange(e.target.value)
-                }
-                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
 
       {/* ================= VEHICLE GRID ================= */}
       <div className="bg-slate-50 py-14">
@@ -362,7 +268,7 @@ function HomePages() {
         <div className="max-w-7xl mx-auto px-4">
 
           {/* EMPTY */}
-          {filteredVehicles.length === 0 ? (
+          {approvedVehicles.length === 0 ? (
 
             <div className="bg-white border-2 border-dashed border-slate-200 p-16 rounded-[3rem] text-center max-w-2xl mx-auto">
 
@@ -389,7 +295,7 @@ function HomePages() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
 
-              {filteredVehicles.map((vehicle) => (
+              {approvedVehicles.map((vehicle) => (
 
                 <div
                   key={vehicle.vehicle_id}

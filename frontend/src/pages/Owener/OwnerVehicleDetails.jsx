@@ -21,8 +21,8 @@ export default function OwnerVehicleDetails() {
     setLoading(true);
     try {
       const res = await api.get(`/owner/vehicles/${id}`);
-      setVehicle(res.data.data.vehicle);
-      setImages(res.data.data.images || []);
+      setVehicle(res.data.data);
+setImages(res.data.data.images || []);
     } catch (err) {
       alert("Failed to load vehicle");
       navigate("/owner/vehicles");
@@ -118,7 +118,7 @@ export default function OwnerVehicleDetails() {
                     <span className="text-xs font-black uppercase tracking-widest">Owner Portal</span>
                   </div>
                   <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                    vehicle.status === 'Approved' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'
+                    vehicle.status === 'APPROVED' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-amber-50 text-amber-700 border-amber-200'
                   }`}>
                     {vehicle.status}
                   </span>
@@ -136,7 +136,7 @@ export default function OwnerVehicleDetails() {
                   <p className="text-[10px] text-blue-600 font-medium">Standard Pricing</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl md:text-3xl font-black text-blue-700 whitespace-nowrap">₹{vehicle.price_per_day}</p>
+                  <p className="text-2xl md:text-3xl font-black text-blue-700 whitespace-nowrap">₹{vehicle.daily_price}</p>
                   <p className="text-[10px] font-black uppercase text-blue-400 tracking-widest">Per Day</p>
                 </div>
               </div>

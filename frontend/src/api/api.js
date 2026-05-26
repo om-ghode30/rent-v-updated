@@ -202,7 +202,12 @@ export const getVehicleDetailsPublic = (id) =>
 //     headers: { "Content-Type": "multipart/form-data" },
 //   });
 export const createBooking = (formData) =>
-  API.post("/booking", formData);
+  API.post("/booking", formData, {
+    headers: {
+      "Content-Type":
+        "multipart/form-data",
+    },
+  });
 
 export const getMyBookings = () =>
   API.get("/booking/my");

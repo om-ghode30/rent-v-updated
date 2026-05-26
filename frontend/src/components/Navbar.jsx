@@ -1,12 +1,20 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { DataContext } from "../context/DataContext";
-import { FaBars, FaTimes, FaCarSide, FaUserCircle } from "react-icons/fa";
+import {
+  FaBars,
+  FaTimes,
+  FaCarSide,
+  FaUserCircle,
+  FaSearch,
+} from "react-icons/fa";
 
 const Navbar = ({ contactRef }) => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const [search, setSearch] =
+  useState("");
 
   // ✅ USE role (NOT user)
   const { isAuthenticated, role, logout } = useContext(DataContext);
@@ -33,6 +41,20 @@ const Navbar = ({ contactRef }) => {
     }
   };
 
+  const handleSearch = (e) => {
+
+  e.preventDefault();
+
+  if (!search.trim()) return;
+
+  navigate(
+    `/vehicles?search=${search}`
+  );
+
+  setOpen(false);
+
+};
+
   const navLinkStyles = "relative font-medium text-slate-600 hover:text-blue-600 transition-colors duration-300 py-2";
 
   return (
@@ -52,6 +74,37 @@ const Navbar = ({ contactRef }) => {
 
           {/* Desktop Menu */}
           <ul className="hidden md:flex gap-8 items-center">
+            {/* SEARCH BAR */}
+{role !== "owner" &&
+ role !== "admin" && (
+
+  <form
+    onSubmit={handleSearch}
+    className="hidden lg:flex items-center bg-slate-100 rounded-2xl overflow-hidden border border-slate-200"
+  >
+
+    <input
+      type="text"
+      placeholder="Search vehicles..."
+      value={search}
+      onChange={(e) =>
+        setSearch(e.target.value)
+      }
+      className="bg-transparent px-4 py-2 outline-none text-sm w-52"
+    />
+
+    <button
+      type="submit"
+      className="bg-blue-600 text-white px-4 py-3 hover:bg-blue-700 transition-all"
+    >
+
+      <FaSearch />
+
+    </button>
+
+  </form>
+
+)}
           {/* HOME LINK */}
 {role !== "owner" && (
   <li>
@@ -145,6 +198,37 @@ const Navbar = ({ contactRef }) => {
         }`}
       >
         <ul className="p-6 space-y-4">
+          {/* MOBILE SEARCH */}
+{role !== "owner" &&
+ role !== "admin" && (
+
+  <form
+    onSubmit={handleSearch}
+    className="flex items-center bg-slate-100 rounded-2xl overflow-hidden border border-slate-200"
+  >
+
+    <input
+      type="text"
+      placeholder="Search vehicles..."
+      value={search}
+      onChange={(e) =>
+        setSearch(e.target.value)
+      }
+      className="flex-1 bg-transparent px-4 py-4 outline-none text-sm"
+    />
+
+    <button
+      type="submit"
+      className="bg-blue-600 text-white px-5 py-4"
+    >
+
+      <FaSearch />
+
+    </button>
+
+  </form>
+
+)}
           {/* MOBILE HOME LINK */}
 {role !== "owner" && (
   <li>

@@ -353,7 +353,8 @@ exports.getMyBookings=async(req,res)=>{
         v.pickup_address,
         v.model_name,
         v.hourly_price,
-        v.daily_price
+        v.daily_price,
+        v.pickup_map_link
       FROM bookings b
       JOIN vehicles v
         ON b.vehicle_id=v.id

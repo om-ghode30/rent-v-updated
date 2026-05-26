@@ -7,6 +7,7 @@ import UserReg from "./pages/Comman/UserReg";
 import Otp from "./pages/Comman/otp";
 import Home from "./pages/Home";
 import UserOTPLogin from "./pages/Comman/UserOTPLogin";
+import SearchedVehicles from "./pages/User/SearchedVehicles";
 
 import AdminLayout from "./pages/Admin/AdminLayout";
 import Dashboard from "./pages/Admin/Dashboard";
@@ -293,7 +294,10 @@ function AppRoutes() {
         <Route path="*" element={<div className="p-20 text-center text-2xl">404 - Page Not Found</div>} />
 
               {/* USER */}
-<Route path="/vehicles" element={<AllVehicles />} />
+<Route
+  path="/vehicles"
+  element={<SearchedVehicles />}
+/>
 
 <Route
   path="/vehicles/:id"
