@@ -16,6 +16,15 @@ router.post(
 );
 
 router.get("/my", controller.getMyBookings);
-router.get("/:id",controller.getPerticularBooking);
+
 router.post("/check-availability",controller.checkAvailability);
+
+router.get(
+  "/vehicles/:id/availability",
+  controller.getVehicleAvailability
+);
+
+router.get("/:id",controller.getPerticularBooking);
+
+
 module.exports = router;

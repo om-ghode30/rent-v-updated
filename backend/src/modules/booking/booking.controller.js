@@ -448,3 +448,93 @@ exports.getPerticularBooking = async (req, res) => {
 
   }
 };
+
+
+exports.getVehicleAvailability =
+  async (req, res) => {
+
+    const vehicleId =
+      req.params.id;
+
+    try {
+
+      const dates = [];
+
+      for (let i = 0; i < 5; i++) {
+
+        const current =
+          new Date();
+
+        current.setDate(
+          current.getDate() + i
+        );
+
+        const start =
+          new Date(current);
+
+        start.setHours(0,0,0,0);
+
+        const end =
+          new Date(current);
+
+        end.setHours(
+          23,59,59,999
+        );
+
+        const [rows] =
+          await db.query(
+            `
+            SELECT id
+            FROM bookings
+            WHERE vehicle_id = ?
+            AND status IN (
+              'PENDING',
+              'CONFIRMED'
+            )
+            AND start_datetime <= ?
+            AND end_datetime >= ?
+            LIMIT 1
+            `,
+            [
+              vehicleId,
+              end,
+              start
+            ]
+          );
+
+        dates.push({
+
+          day:
+            current.toLocaleDateString(
+              "en-IN",
+              {
+                weekday: "short",
+              }
+            ),
+
+          date:
+            current.getDate(),
+
+          booked:
+            rows.length > 0,
+
+        });
+
+      }
+
+      res.json({
+        success: true,
+        data: dates,
+      });
+
+    } catch (error) {
+
+      res.status(500).json({
+        success: false,
+        message:
+          error.message,
+      });
+
+    }
+
+};

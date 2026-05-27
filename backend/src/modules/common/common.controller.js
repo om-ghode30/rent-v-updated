@@ -225,7 +225,8 @@ const getVehicleDetailsPublic = async (req, res) => {
 
   try {
     const vehicle = await getOne(`
-      SELECT id, vehicle_number, brand, model_name, price_per_day
+      SELECT id, vehicle_number, brand, model_name, price_per_day, 
+      pickup_address, pickup_map_link, hourly_price, daily_price
       FROM vehicles WHERE id = ? AND status = 'APPROVED' AND isBlocked = 0
     `, [vehicleId]);
 
