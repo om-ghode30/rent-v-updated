@@ -192,7 +192,7 @@ const getApprovedVehicles = async (req, res) => {
     const [vehicles] = await db.query(`
       SELECT 
         v.id as vehicle_id, v.vehicle_number, v.brand, 
-        v.model_name, v.price_per_day, u.name as owner_name
+        v.model_name, v.daily_price, u.name as owner_name
       FROM vehicles v
       JOIN users u ON v.owner_id = u.id
       WHERE v.status = 'APPROVED'
